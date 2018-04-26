@@ -1,0 +1,50 @@
+---
+- name: Avi SE | CSP | Service deploy | Check if service already exists
+  uri:
+    url: "https://{{ inventory_hostname }}/api/running/services/service/{{ se_csp_service_name }}"
+    method: GET
+    user: "{{ se_csp_user }}"
+    password: "{{ se_csp_password }}"
+    force_basic_auth: yes
+    headers:
+      Accept: '*/*'
+    validate_certs: false
+    return_content: true
+  failed_when: false
+  register: se_csp_service_exists
+  delegate_to: localhost
+
+- block:
+    - set_fact:
+        se_csp_service_exists_json: "{{ se_csp_service_exists.content|from_json }}"
+    - debug: msg="Service {{ se_csp_service_exists_json['vsb:service'].name }} already exists."
+  when: se_csp_service_exists.status == 200
+
+- name: Avi SE | CSP | Service deploy | Create the service
+  uri:
+    url: "https://{{ inventory_hostname }}/api/running/services/"
+    method: POST
+    user: "{{ se_csp_user }}"
+    password: "{{ se_csp_password }}"
+    force_basic_auth: yes
+    headers:
+      Accept: '*/*'
+    validate_certs: false
+    body_format: json
+    body:
+      service:
+        disk_size: "{{ se_csp_disk_size|int }}"
+        name: "{{ se_csp_service_name }}"
+        power: "on"
+        iso_name: "{{ se_csp_qcow_image_name }}"
+        day0_filename: "{{ se_csp_metafile_name }}"
+        numcpu: "{{ se_csp_num_cpu|int }}"
+        memory: "{{ se_csp_memory_mb|int }}"
+        vnics:
+          vnic:
+            "{{ se_csp_vnics }}"
+    return_content: true
+  register: se_csp_service
+  failed_when: se_csp_service.status != 201
+  delegate_to: localhost
+  when: se_csp_service_exists.status != 200
