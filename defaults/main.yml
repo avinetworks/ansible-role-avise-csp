@@ -1,6 +1,17 @@
 ---
 # defaults file for avise-csp
 
+se_skip_requirements: false
+
+# se_autoregister parameters
+se_autoregister: true
+se_auth_token: ~
+se_master_ctl_ip: ~
+se_master_ctl_username: ~
+se_master_ctl_password: ~
+se_cloud_name: Default-Cloud
+se_tenant: admin
+
 se_csp_user: ~
 se_csp_password: ~
 se_csp_qcow_image_file: se.qcow

@@ -1,6 +1,12 @@
 # Deployment using CSP. This does require you to download the QCOW from the Avi customer portal.
 # Using the relative, or absolute location of the file will allow you to upload, and configure the CSP service.
 #
+
+- name: Avi SE | Set facts
+  set_fact:
+    se_autoregister: false
+  when: se_auth_token != None
+
 - name: Avi SE | CSP | Requirements
   include: requirements.yml
 

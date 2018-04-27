@@ -25,7 +25,7 @@
       when: se_autoregister
     - name: Avi SE | CSP | Metafile deploy | Create metafile content
       template:
-        src: csp/avi_meta_se.j2
+        src: avi_meta_se.j2
         dest: /tmp/{{ se_csp_metafile_name }}
       delegate_to: localhost
       register: se_avi_metafile
