@@ -26,7 +26,35 @@
         path: "{{ se_csp_qcow_image_file }}"
       delegate_to: localhost
       register: se_qcow_status
-      failed_when: not se_qcow_status.stat.exists
+      #failed_when: not se_qcow_status.stat.exists
+    - block:
+        - name:  Avi SE | CSP | Image deploy | grnarate SE image if not exist on controller
+          delegate_to: localhost
+          avi_api_session:
+            controller: "{{se_master_ctl_ip}}"
+            username: "{{se_master_ctl_username}}"
+            password: "{{se_master_ctl_password}}"
+            api_version: "{{se_master_ctl_version}}"
+            http_method: post
+            path: 'fileservice/seova'
+            timeout: 600
+            data:
+              file_format: qcow2
+
+        - name: Avi SE | CSP | Image deploy | Download SE image from Controller
+          delegate_to: localhost
+          avi_api_fileservice:
+            controller: "{{se_master_ctl_ip}}"
+            username: "{{se_master_ctl_username}}"
+            password: "{{se_master_ctl_password}}"
+            http_method: get
+            path: seova
+            file_path: "{{ se_csp_qcow_image_file }}"
+            api_version: "{{se_master_ctl_version}}"
+            params:
+              file_format: qcow2
+      when: not se_qcow_status.stat.exists
+
     - name: Avi SE | CSP | Image deploy | SCP qcow to csp device
       shell: sshpass -p {{ se_csp_password }} scp -o StrictHostKeyChecking=no {{ se_csp_qcow_image_file }} {{ se_csp_user }}@{{ inventory_hostname }}:/osp/repository
       delegate_to: localhost
