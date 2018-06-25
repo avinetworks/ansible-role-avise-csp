@@ -74,6 +74,7 @@
     uri:
       url: "https://{{ inventory_hostname }}/api/running/services/"
       method: POST
+      timeout: 120
       user: "{{ se_csp_user }}"
       password: "{{ se_csp_password }}"
       force_basic_auth: yes
