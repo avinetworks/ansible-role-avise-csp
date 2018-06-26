@@ -20,13 +20,13 @@ se_csp_mgmt_ip: ~
 se_csp_mgmt_mask: ~
 se_csp_default_gw: ~
 se_csp_tenant_uuid: ~
-se_csp_disk_size: 64
+se_csp_disk_size: ~
 se_csp_disk_type: virtio
 se_csp_platform: csp-2100
 se_csp_service_name: avi-se
 se_csp_metafile_name: avi_meta_{{ se_csp_service_name }}.yml
-se_csp_num_cpu: 4
-se_csp_memory_gb: 16
+se_csp_num_cpu: ~
+se_csp_memory_gb: ~
 se_csp_memory_mb: "{{ se_csp_memory_gb|int * 1024 }}"
 se_csp_vnics:
   - nic: "0"
