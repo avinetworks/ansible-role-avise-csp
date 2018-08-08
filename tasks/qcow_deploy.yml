@@ -28,7 +28,7 @@
       register: se_qcow_status
       #failed_when: not se_qcow_status.stat.exists
     - block:
-        - name:  Avi SE | CSP | Image deploy | genarate SE image if not exist on controller
+        - name:  Avi SE | CSP | Image deploy | grnarate SE image if not exist on controller
           delegate_to: localhost
           avi_api_session:
             controller: "{{se_master_ctl_ip}}"
@@ -44,7 +44,6 @@
         - name: Avi SE | CSP | Image deploy | Download SE image from Controller
           delegate_to: localhost
           avi_api_fileservice:
-            force_mode: "{{se_master_force_mode}}"
             controller: "{{se_master_ctl_ip}}"
             username: "{{se_master_ctl_username}}"
             password: "{{se_master_ctl_password}}"
@@ -54,7 +53,7 @@
             api_version: "{{se_master_ctl_version}}"
             params:
               file_format: qcow2
-      when: (not se_qcow_status.stat.exists) or (force_mode)
+      when: not se_qcow_status.stat.exists
 
     - name: Avi SE | CSP | Image deploy | SCP qcow to csp device
       shell: sshpass -p "{{ se_csp_password }}" scp -o StrictHostKeyChecking=no {{ se_csp_qcow_image_file }} {{ se_csp_user }}@{{ inventory_hostname }}:/osp/repository
