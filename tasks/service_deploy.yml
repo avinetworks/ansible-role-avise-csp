@@ -89,4 +89,50 @@
     failed_when: se_csp_service.status != 201
     changed_when: se_csp_service.status == 201
     delegate_to: localhost
+
+  - name: Avi SE | CSP | Service deploy | Verify SE connected to controller
+    avi_api_session:
+      controller: "{{ se_master_ctl_ip }}"
+      username: "{{ se_master_ctl_username }}"
+      password: "{{ se_master_ctl_password }}"
+      http_method: get
+      path: serviceengine
+      api_version: "{{ se_master_ctl_version }}"
+      params:
+        name: "{{ se_csp_mgmt_ip }}"
+        skip_default: true
+    retries: 120
+    delay: 10
+    register: se_obj
+    until: se_obj.obj.count == 1
+    delegate_to: localhost
   when: se_csp_service_exists.status != 200
+
+- block:
+  - name: Avi SE | CSP | Service deploy | Get SE object to configure vnic ips
+    avi_api_session:
+      controller: "{{ se_master_ctl_ip }}"
+      username: "{{ se_master_ctl_username }}"
+      password: "{{ se_master_ctl_password }}"
+      http_method: get
+      path: serviceengine
+      api_version: "{{ se_master_ctl_version }}"
+      params:
+        name: "{{ se_csp_mgmt_ip }}"
+        skip_default: true
+    retries: 120
+    delay: 5
+    register: se_obj
+    until: se_obj.obj.results[0].se_connected == true
+    delegate_to: localhost
+
+  - name: Avi SE | CSP | Service deploy | Configure vnic ips
+    avi_update_se_data_vnic_ip:
+      controller: "{{ se_master_ctl_ip }}"
+      username: "{{ se_master_ctl_username }}"
+      password: "{{ se_master_ctl_password }}"
+      api_version: "{{ se_master_ctl_version }}"
+      se_obj: "{{  se_obj.obj.results[0] }}"
+      se_csp_vnics: "{{ se_csp_vnics_config }}"
+    delegate_to: localhost
+  when: se_csp_vnics_config
