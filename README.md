@@ -7,6 +7,7 @@ Using this module you are able to install the Avi Vantage Service Engine, to you
 ## Requirements
 
 - A CSP device
+- `avisdk` python library, which can be installed by `pip install avisdk --upgrade`
 
 ## Role Dependencies
 
