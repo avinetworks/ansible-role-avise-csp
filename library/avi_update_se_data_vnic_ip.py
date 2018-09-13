@@ -59,46 +59,61 @@ def main():
     se_obj = module.params['se_obj']
     se_csp_vnics = module.params['se_csp_vnics']
     for d_vnic in se_obj['data_vnics']:
-        nic_id = int(d_vnic['linux_name'].replace('eth', ''))
-        nic_conf = [obj for obj in se_csp_vnics if obj['nic'] == nic_id]
-        ipv4_addrs = nic_conf[0].get('ipv4_addrs', None)
-        ipv6_addrs = nic_conf[0].get('ipv6_addrs', None)
+        vlan_conf = []
         vnic_networks_lst = []
-        if ipv4_addrs:
-            for ipv4_addr in ipv4_addrs.split(','):
-                addr, mask = ipv4_addr.split('/')
-                vnic_networks = {
-                    "ctlr_alloc": False,
-                    "ip": {
-                        "ip_addr": {
-                            "addr": addr.strip(),
-                            "type": "V4"
+        # Checks if bond configuration is present in se_csp_vnics
+        if any( 'bond' in vlan_config for vlan_config in se_csp_vnics):
+            bond_flag = True
+        else:
+            bond_flag = False
+        # Get bond/nic id from data
+        if 'eth' in d_vnic['linux_name']:
+            nic_id = int(d_vnic['linux_name'].replace('eth', ''))
+        if 'bond' in d_vnic['linux_name']:
+            bond_id = int(d_vnic['linux_name'].replace('bond', ''))
+
+        for obj in se_csp_vnics:
+            if 'nic' in obj and not bond_flag and 'eth' in d_vnic['linux_name']:
+                if obj['nic'] == nic_id:
+                    vlan_conf.append(obj)
+            if 'bond' in obj and bond_flag and 'bond' in d_vnic['linux_name']:
+                if obj['bond'] == bond_id:
+                    vlan_conf.append(obj)
+        if len(vlan_conf) > 0:
+            ipv4_addrs = vlan_conf[0].get('ipv4_addrs', None)
+            ipv6_addrs = vlan_conf[0].get('ipv6_addrs', None)
+            if ipv4_addrs:
+                for ipv4_addr in ipv4_addrs.split(','):
+                    addr, mask = ipv4_addr.split('/')
+                    vnic_networks = {
+                        "ctlr_alloc": False,
+                        "ip": {
+                            "ip_addr": {
+                                "addr": addr.strip(),
+                                "type": "V4"
+                            },
+                            "mask": mask.strip()
                         },
-                        "mask": mask.strip()
-                    },
-                    "mode": "STATIC"
-                }
-                vnic_networks_lst.append(vnic_networks)
-        if ipv6_addrs:
-            for ipv6_addr in ipv6_addrs.split(','):
-                addr, mask = ipv6_addr.split('/')
-                vnic_networks = {
-                    "ctlr_alloc": False,
-                    "ip": {
-                        "ip_addr": {
-                            "addr": addr.strip(),
-                            "type": "V6"
+                        "mode": "STATIC"
+                    }
+                    vnic_networks_lst.append(vnic_networks)
+            if ipv6_addrs:
+                for ipv6_addr in ipv6_addrs.split(','):
+                    addr, mask = ipv6_addr.split('/')
+                    vnic_networks = {
+                        "ctlr_alloc": False,
+                        "ip": {
+                            "ip_addr": {
+                                "addr": addr.strip(),
+                                "type": "V6"
+                            },
+                            "mask": mask.strip()
                         },
-                        "mask": mask.strip()
-                    },
-                    "mode": "STATIC"
-                }
-                vnic_networks_lst.append(vnic_networks)
+                        "mode": "STATIC"
+                    }
+                    vnic_networks_lst.append(vnic_networks)
         if vnic_networks_lst:
             d_vnic['vnic_networks'] = vnic_networks_lst
-        else:
-            return module.exit_json(changed=False)
-
     module.params.update(se_obj)
     module.params.update(
         {
