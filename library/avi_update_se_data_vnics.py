@@ -14,8 +14,8 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
 
 DOCUMENTATION = '''
 ---
-module: avi_update_se_data_vnic_ip
-author: Chaitanya Deshpande (chaitanya.deshpande@avinetworks.com)
+module: avi_update_se_data_vnics
+author: Chaitanya Deshpande (chaitanya.deshpande@avinetworks.com), Shrikant Chaudhari (shrikant.chaudhari@avinetworks.com)
 
 short_description: Module for update se data vnic ips 
 requirements: [ avisdk ]
