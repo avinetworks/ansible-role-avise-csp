@@ -61,6 +61,7 @@ def main():
     for d_vnic in se_obj['data_vnics']:
         vlan_conf = []
         vnic_networks_lst = []
+        vlan_interface_lst= []
         # Checks if bond configuration is present in se_csp_vnics
         if any( 'bond' in vlan_config for vlan_config in se_csp_vnics):
             bond_flag = True
@@ -82,6 +83,10 @@ def main():
         if len(vlan_conf) > 0:
             ipv4_addrs = vlan_conf[0].get('ipv4_addrs', None)
             ipv6_addrs = vlan_conf[0].get('ipv6_addrs', None)
+            dhcp_enabled = vlan_conf[0].get('dhcp_enabled', True)
+            ip6_autocfg_enabled = vlan_conf[0].get('ip6_autocfg_enabled', True)
+            is_mgmt = vlan_conf[0].get('is_mgmt', True)
+            vlan_id = bond_id if 'bond' in d_vnic['linux_name'] else nic_id
             if ipv4_addrs:
                 for ipv4_addr in ipv4_addrs.split(','):
                     addr, mask = ipv4_addr.split('/')
@@ -96,6 +101,14 @@ def main():
                         },
                         "mode": "STATIC"
                     }
+                    vlan_interface = {
+                        "dhcp_enabled": dhcp_enabled,
+                        "ip6_autocfg_enabled": ip6_autocfg_enabled,
+                        "is_mgmt": is_mgmt,
+                        "vlan_id": vlan_id,
+                        "vnic_networks": vnic_networks,
+                    }
+                    vlan_interface_lst.append(vlan_interface)
                     vnic_networks_lst.append(vnic_networks)
             if ipv6_addrs:
                 for ipv6_addr in ipv6_addrs.split(','):
@@ -111,9 +124,19 @@ def main():
                         },
                         "mode": "STATIC"
                     }
+                    vlan_interface = {
+                        "dhcp_enabled": dhcp_enabled,
+                        "ip6_autocfg_enabled": ip6_autocfg_enabled,
+                        "is_mgmt": is_mgmt,
+                        "vlan_id": vlan_id,
+                        "vnic_networks": vnic_networks,
+                    }
+                    vlan_interface_lst.append(vlan_interface)
                     vnic_networks_lst.append(vnic_networks)
         if vnic_networks_lst:
             d_vnic['vnic_networks'] = vnic_networks_lst
+        if vlan_interface:
+            d_vnic['vlan_interfaces'] = vlan_interface_lst
     module.params.update(se_obj)
     module.params.update(
         {
