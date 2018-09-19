@@ -90,7 +90,7 @@
     changed_when: se_csp_service.status == 201
     delegate_to: localhost
 
-  - name: Avi SE | CSP | Service deploy | Verify SE connected to controller
+  - name: Avi SE | CSP | Service deploy | Verify SE service exists
     avi_api_session:
       controller: "{{ se_master_ctl_ip }}"
       username: "{{ se_master_ctl_username }}"
@@ -109,7 +109,7 @@
   when: se_csp_service_exists.status != 200
 
 - block:
-  - name: Avi SE | CSP | Service deploy | Get SE object to configure vnic ips
+  - name: Avi SE | CSP | Service deploy | Verify SE connected to controller
     avi_api_session:
       controller: "{{ se_master_ctl_ip }}"
       username: "{{ se_master_ctl_username }}"
@@ -126,13 +126,13 @@
     until: se_obj.obj.results[0].se_connected == true
     delegate_to: localhost
 
+- block:
   - name: Avi SE | CSP | Service deploy | Configure vnic ips
     avi_update_se_data_vnics:
       controller: "{{ se_master_ctl_ip }}"
       username: "{{ se_master_ctl_username }}"
       password: "{{ se_master_ctl_password }}"
       api_version: "{{ se_master_ctl_version }}"
-      se_obj: "{{  se_obj.obj.results[0] }}"
-      se_csp_vnics: "{{ se_csp_vnics_config }}"
+      data_vnics_config: "{{ se_csp_vnics_config }}"
     delegate_to: localhost
   when: se_csp_vnics_config
