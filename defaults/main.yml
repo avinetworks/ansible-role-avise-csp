@@ -9,6 +9,7 @@ se_auth_token: ~
 se_master_ctl_ip: ~
 se_master_ctl_username: ~
 se_master_ctl_password: ~
+se_master_ctl_version: 17.2.12
 se_cloud_name: Default-Cloud
 se_tenant: admin
 
@@ -44,6 +45,7 @@ se_csp_vnics:
     passthrough_mode: sriov
     vlan: 201
     network_name: enp7s0f1
+se_csp_vnics_config: ~
 se_csp_meta_config: {}
 se_csp_meta_options:
   AVICNTRL: "{{ se_master_ctl_ip }}"
