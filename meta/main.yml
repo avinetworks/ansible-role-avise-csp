@@ -1,6 +1,6 @@
 galaxy_info:
   role_name: avise-csp
-  author: Avi SDK Team
+  author: Avi Networks
   description: Ansible Role to setup Avi Service Engine on CSP Cloud
   company: Avi Networks
   license: BSD
