@@ -12,7 +12,7 @@
     return_content: true
   failed_when: false
   register: se_image_exists
-#  delegate_to: localhost
+  delegate_to: localhost
 
 - block:
   - set_fact:
@@ -20,34 +20,11 @@
   - debug: msg="Image {{ se_image_exists_json.output.name }} already exists."
   when: se_image_exists.status == 200
 
-#- block:
-#  - name:  Avi SE | CSP | Image deploy | genarate SE image if not exist on controller
-#    delegate_to: localhost
-#    avi_api_session:
-#      controller: "{{se_master_ctl_ip}}"
-#      username: "{{se_master_ctl_username}}"
-#      password: "{{se_master_ctl_password}}"
-#      api_version: "{{se_master_ctl_version}}"
-#      http_method: post
-#      path: 'fileservice/seova'
-#      timeout: 600
-#      data:
-#        file_format: qcow2
-#
-#  - name: Avi SE | CSP | Image deploy | SCP qcow to csp device
-#      #      shell: sshpass -p "{{ se_csp_password }}" scp -o StrictHostKeyChecking=no {{ se_csp_qcow_image_file }} {{ se_csp_user }}@{{ inventory_hostname }}:/osp/repository
-#      shell: sshpass -p "{{ se_csp_password }}" scp -o StrictHostKeyChecking=no /opt/avi/se_ova/{{ source_filename }} {{ se_csp_user }}@{{ se_csp_host }}:/osp/repository/{{ destination_filename }}
-#      register: command_result
-#      failed_when: false
-#  when: se_image_exists.status == 200 or se_csp_qcow_force_mode
-
 - block:
     - name: Avi SE | CSP | Image deploy | Verify qcow exists on controller
       stat:
         path: "/opt/avi/se_ova/{{ source_filename }}"
-#      delegate_to: localhost
       register: se_qcow_status
-      #failed_when: not se_qcow_status.stat.exists
     - block:
         - name:  Avi SE | CSP | Image deploy | genarate SE image if not exist on controller
           delegate_to: localhost
@@ -61,27 +38,28 @@
             timeout: 600
             data:
               file_format: qcow2
-
-#        - name: Avi SE | CSP | Image deploy | Download SE image from Controller
-#          delegate_to: localhost
-#          avi_api_fileservice:
-#            force_mode: "{{se_csp_qcow_force_mode}}"
-#            controller: "{{se_master_ctl_ip}}"
-#            username: "{{se_master_ctl_username}}"
-#            password: "{{se_master_ctl_password}}"
-#            upload: false
-#            path: seova
-#            file_path: "{{ se_csp_qcow_image_file }}"
-#            api_version: "{{se_master_ctl_version}}"
-#            params:
-#              file_format: qcow2
       when: (not se_qcow_status.stat.exists) or (se_csp_qcow_force_mode)
 
+    - name: Check SE file exisits on controller
+      stat: path=/opt/avi/se_ova/{{ source_filename }}
+      register: se_image_file
+
+    - name: Copy SE image to new filename
+      command: cp /opt/avi/se_ova/{{ source_filename }} /tmp/{{ destination_filename }}
+      when: se_image_file.stat.exists
+
     - name: Avi SE | CSP | Image deploy | SCP qcow to csp device
-      shell: sshpass -p "{{ se_csp_password }}" scp -o StrictHostKeyChecking=no /opt/avi/se_ova/{{ source_filename }} {{ se_csp_user }}@{{ se_csp_host }}:/osp/repository
+      shell: sshpass -p "{{ se_csp_password }}" scp -o StrictHostKeyChecking=no /tmp/{{ destination_filename }} {{ se_csp_user }}@{{ se_csp_host }}:/osp/repository && rm -rf /tmp/{{ destination_filename }}
       register: command_result
       failed_when: false
-#      delegate_to: localhost
+
+    - name: Check SE tmp file exists on controller
+        stat: path=/tmp/{{ destination_filename }}
+        register: se_tmp_image_file
+
+    - name: Remove tmp SE image
+      command: rm -rf /tmp/{{ destination_filename }}
+      when: se_tmp_image_file.stat.exists
 
     - name: Avi SE | CSP | Image deploy | Verify the qcow image copied successfully
       uri:
