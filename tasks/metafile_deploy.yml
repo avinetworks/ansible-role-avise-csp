@@ -1,7 +1,7 @@
 ---
 - name: Avi SE | CSP | Metafile deploy | See if the metafile already exists
   uri:
-    url: "https://{{ inventory_hostname }}/api/operational/repository/image/{{ se_csp_metafile_name }}/_operations/get_image"
+    url: "https://{{ se_csp_host }}/api/operational/repository/image/{{ destination_filename }}/_operations/get_image"
     method: POST
     user: "{{ se_csp_user }}"
     password: "{{ se_csp_password }}"
