@@ -2,7 +2,7 @@
 
 - name: Avi SE | CSP | Service deploy | Get CSP version
   uri:
-    url: "https://{{ inventory_hostname }}/api/running/resources/resource/{{ se_csp_platform }}"
+    url: "https://{{ se_csp_host }}/api/running/resources/resource/{{ se_csp_platform }}"
     method: GET
     user: "{{ se_csp_user }}"
     password: "{{ se_csp_password }}"
@@ -24,7 +24,7 @@
 
 - name: Avi SE | CSP | Service deploy | Check if service already exists
   uri:
-    url: "https://{{ inventory_hostname }}/api/running/services/service/{{ se_csp_service_name }}"
+    url: "https://{{ se_csp_host }}/api/running/services/service/{{ se_csp_service_name }}"
     method: GET
     timeout: 120
     user: "{{ se_csp_user }}"
@@ -53,13 +53,14 @@
         disk_type: "{{ se_csp_disk_type | default('virtio')}}"
         name: "{{ se_csp_service_name }}"
         power: "on"
-        iso_name: "{{ se_csp_qcow_image_name }}"
+        iso_name: "{{ destination_filename }}"
         day0_filename: "{{ se_csp_metafile_name }}"
         numcpu: "{{ se_csp_num_cpu|int }}"
         memory: "{{ se_csp_memory_mb|int }}"
         vnics:
           vnic:
             "{{ se_csp_vnics }}"
+    delegate_to: localhost
 
   - name: Avi SE | CSP | Service deploy | Update service info for CSP > 2.2.4
     set_fact:
@@ -72,7 +73,7 @@
 
   - name: Avi SE | CSP | Service deploy | Create the service
     uri:
-      url: "https://{{ inventory_hostname }}/api/running/services/"
+      url: "https://{{ se_csp_host }}/api/running/services/"
       method: POST
       timeout: 120
       user: "{{ se_csp_user }}"

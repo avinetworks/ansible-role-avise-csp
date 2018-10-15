@@ -33,7 +33,6 @@
       msg: "Must have 10GB or more disk size"
   when: not se_skip_requirements
 
-- name: Avi SE | CSP | Requirements | SSHPass Check
+- name: Avi SE | CSP | Requirements | SSHPass Check on Controller
   command: which sshpass
   changed_when: false
-  delegate_to: localhost
