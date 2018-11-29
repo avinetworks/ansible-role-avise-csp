@@ -54,8 +54,8 @@
       failed_when: false
 
     - name: Check SE tmp file exists on controller
-        stat: path=/tmp/{{ destination_filename }}
-        register: se_tmp_image_file
+      stat: path=/tmp/{{ destination_filename }}
+      register: se_tmp_image_file
 
     - name: Remove tmp SE image
       command: rm -rf /tmp/{{ destination_filename }}
