@@ -15,7 +15,7 @@ se_tenant: admin
 
 se_csp_user: ~
 se_csp_password: ~
-se_csp_qcow_image_file: se.qcow
+se_csp_qcow_image_file: se.qcow2
 se_csp_qcow_image_name: "{{ se_csp_qcow_image_file|basename }}"
 se_csp_qcow_force_mode: false
 se_csp_mgmt_ip: ~
