@@ -1,7 +1,7 @@
 ---
 - name: Avi SE | CSP | Image deploy | See if the qcow image already exists
   uri:
-    url: "https://{{ se_csp_host }}/api/operational/repository/image/{{ destination_filename }}/_operations/get_image"
+    url: "https://{{ se_csp_host }}/api/operational/repository/image/{{ se_csp_qcow_image_name }}/_operations/get_image"
     method: POST
     user: "{{ se_csp_user }}"
     password: "{{ se_csp_password }}"
@@ -23,7 +23,7 @@
 - block:
     - name: Avi SE | CSP | Image deploy | Verify qcow exists on controller
       stat:
-        path: "/opt/avi/se_ova/{{ source_filename }}"
+        path: "/opt/avi/se_ova/{{ se_csp_qcow_image_file }}"
       register: se_qcow_status
     - block:
         - name:  Avi SE | CSP | Image deploy | genarate SE image if not exist on controller
@@ -41,29 +41,29 @@
       when: (not se_qcow_status.stat.exists) or (se_csp_qcow_force_mode)
 
     - name: Check SE file exisits on controller
-      stat: path=/opt/avi/se_ova/{{ source_filename }}
+      stat: path=/opt/avi/se_ova/{{ se_csp_qcow_image_file }}
       register: se_image_file
 
     - name: Copy SE image to new filename
-      command: cp /opt/avi/se_ova/{{ source_filename }} /tmp/{{ destination_filename }}
+      command: cp /opt/avi/se_ova/{{ se_csp_qcow_image_file }} /tmp/{{ se_csp_qcow_image_name }}
       when: se_image_file.stat.exists
 
     - name: Avi SE | CSP | Image deploy | SCP qcow to csp device
-      shell: sshpass -p "{{ se_csp_password }}" scp -o StrictHostKeyChecking=no /tmp/{{ destination_filename }} {{ se_csp_user }}@{{ se_csp_host }}:/osp/repository && rm -rf /tmp/{{ destination_filename }}
+      shell: sshpass -p "{{ se_csp_password }}" scp -o StrictHostKeyChecking=no /tmp/{{ se_csp_qcow_image_name }} {{ se_csp_user }}@{{ se_csp_host }}:/osp/repository && rm -rf /tmp/{{ se_csp_qcow_image_name }}
       register: command_result
       failed_when: false
 
     - name: Check SE tmp file exists on controller
-      stat: path=/tmp/{{ destination_filename }}
+      stat: path=/tmp/{{ se_csp_qcow_image_name }}
       register: se_tmp_image_file
 
     - name: Remove tmp SE image
-      command: rm -rf /tmp/{{ destination_filename }}
+      command: rm -rf /tmp/{{ se_csp_qcow_image_name }}
       when: se_tmp_image_file.stat.exists
 
     - name: Avi SE | CSP | Image deploy | Verify the qcow image copied successfully
       uri:
-        url: "https://{{ se_csp_host }}/api/operational/repository/image/{{ destination_filename }}/_operations/get_image"
+        url: "https://{{ se_csp_host }}/api/operational/repository/image/{{ se_csp_qcow_image_name }}/_operations/get_image"
         method: POST
         user: "{{ se_csp_user }}"
         password: "{{ se_csp_password }}"

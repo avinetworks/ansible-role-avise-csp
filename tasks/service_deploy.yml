@@ -53,7 +53,7 @@
         disk_type: "{{ se_csp_disk_type | default('virtio')}}"
         name: "{{ se_csp_service_name }}"
         power: "on"
-        iso_name: "{{ destination_filename }}"
+        iso_name: "{{ se_csp_qcow_image_name }}"
         day0_filename: "{{ se_csp_metafile_name }}"
         numcpu: "{{ se_csp_num_cpu|int }}"
         memory: "{{ se_csp_memory_mb|int }}"
