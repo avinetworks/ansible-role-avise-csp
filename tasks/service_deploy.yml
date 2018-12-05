@@ -96,6 +96,7 @@
       controller: "{{ se_master_ctl_ip }}"
       username: "{{ se_master_ctl_username }}"
       password: "{{ se_master_ctl_password }}"
+      tenant: "{{ se_tenant }}"
       http_method: get
       path: serviceengine
       api_version: "{{ se_master_ctl_version }}"
@@ -115,6 +116,7 @@
       controller: "{{ se_master_ctl_ip }}"
       username: "{{ se_master_ctl_username }}"
       password: "{{ se_master_ctl_password }}"
+      tenant: "{{ se_tenant }}"
       http_method: get
       path: serviceengine
       api_version: "{{ se_master_ctl_version }}"
