@@ -86,9 +86,12 @@
       body:
         service: "{{ se_csp_service_info }}"
       return_content: true
+      status_code: 200, 201, 409
     register: se_csp_service
-    failed_when: se_csp_service.status != 201
-    changed_when: se_csp_service.status == 201
+    until: se_csp_service.status in [200, 201, 409]
+    retries: 20
+    delay: 10
+    changed_when: se_csp_service.status in [200, 201]
     delegate_to: localhost
 
   - name: Avi SE | CSP | Service deploy | Verify SE service exists
