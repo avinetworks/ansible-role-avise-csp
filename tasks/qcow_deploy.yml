@@ -26,7 +26,7 @@
         path: "/opt/avi/se_ova/{{ se_csp_qcow_image_file }}"
       register: se_qcow_status
     - block:
-        - name:  Avi SE | CSP | Image deploy | genarate SE image if not exist on controller
+        - name:  Avi SE | CSP | Image deploy | generate SE image if not exist on controller
           delegate_to: localhost
           avi_api_session:
             controller: "{{se_master_ctl_ip}}"
@@ -40,7 +40,7 @@
               file_format: qcow2
       when: (not se_qcow_status.stat.exists) or (se_csp_qcow_force_mode)
 
-    - name: Check SE file exisits on controller
+    - name: Check SE file exists on controller
       stat: path=/opt/avi/se_ova/{{ se_csp_qcow_image_file }}
       register: se_image_file
 
@@ -72,11 +72,12 @@
           Accept: '*/*'
         validate_certs: false
         return_content: true
+        status_code: 200, 204
       register: con_image_verify
       delegate_to: localhost
 
     - name: Avi SE | CSP | Image deploy | Fail if SCP verification faild
       fail:
         msg: "SCP to CSP host failed {{ command_result }}"
-      when: con_image_verify.status != 200
+      when: con_image_verify.status != 200 and con_image_verify.status != 204
   when: se_image_exists.status != 200

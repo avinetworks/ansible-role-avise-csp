@@ -12,6 +12,9 @@
     se_autoregister: false
   when: se_auth_token != None
 
+- name: Avi SE | CSP | Initial Data
+  include: initial_data.yml
+
 - name: Avi SE | CSP | Requirements
   include: requirements.yml
 
