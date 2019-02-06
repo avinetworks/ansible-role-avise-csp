@@ -40,7 +40,8 @@ These are only marked required, for when you are using CSP Deployment.
 |----------|----------|---------|----------|
 | `se_csp_user` | Yes | `None` | Username that will be used to connect to the CSP server. |
 | `se_csp_password` | Yes | `None` | Password required to authenticate the user. |
-| `se_csp_qcow_image_file` | No | `se.qcow` | Relative or absolute location of the SE qcow. |
+| `se_csp_qcow_image_file` | No | `se.qcow2` | SE qcow2 file name to be searched for on the controller. |
+| `se_csp_qcow_image_name` | No | `None` | SE qcow2 file name to be downloaded as or used from local. When copied to CSP host, it defaults to se-(controller_version)-(build)-(cluster_uuid).qcow2 eg. se-17.2.14-9014-0f9449f5.qcow2 |
 | `se_csp_mgmt_ip` | Yes | `None` | IP of the SE on the management network. |
 | `se_csp_mgmt_mask` | Yes | `None` | Subnet mask that the SE will require. |
 | `se_csp_default_gw` | Yes | `None` | Default gateway for the SE. |
