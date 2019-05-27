@@ -1,4 +1,23 @@
 ---
+- name: Avi SE | CSP | Service deploy | Get CSP version
+  uri:
+    url: "https://{{ se_csp_host }}/api/running/resources/resource/{{ se_csp_platform }}"
+    method: GET
+    user: "{{ se_csp_user }}"
+    password: "{{ se_csp_password }}"
+    force_basic_auth: yes
+    headers:
+      Accept: '*/*'
+    validate_certs: false
+    return_content: true
+  failed_when: se_csp_resource_rsp.status != 200
+  register: se_csp_resource_rsp
+  delegate_to: localhost
+
+- name: Avi SE | CSP | Service deploy | Set CSP version
+  set_fact:
+    se_csp_resource_info: "{{ se_csp_resource_rsp.content|from_json }}"
+
 - name: Avi SE | CSP | Image deploy | See if the qcow image already exists
   uri:
     url: "https://{{ se_csp_host }}/api/operational/repository/image/{{ se_csp_qcow_image_name }}/_operations/get_image"
@@ -18,7 +37,13 @@
   - set_fact:
       se_image_exists_json: "{{ se_image_exists.content|from_json }}"
   - debug: msg="Image {{ se_image_exists_json.output.name }} already exists."
-  when: se_image_exists.status == 200
+  when: se_image_exists.status == 200 and se_csp_resource_info['resource:resource'].csp_version < "02.02.04.00"
+
+- block:
+  - set_fact:
+      se_image_exists_json: "{{ se_image_exists.content|from_json }}"
+  - debug: msg="Image {{ se_image_exists_json.question_xml:output.name }} already exists."
+  when: se_image_exists.status == 200 and se_csp_resource_info['resource:resource'].csp_version >= "02.02.04.00"
 
 - block:
     - name: Avi SE | CSP | Image deploy | Verify qcow exists on controller
