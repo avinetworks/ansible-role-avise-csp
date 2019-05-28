@@ -1,24 +1,5 @@
 ---
 
-- name: Avi SE | CSP | Service deploy | Get CSP version
-  uri:
-    url: "https://{{ se_csp_host }}/api/running/resources/resource/{{ se_csp_platform }}"
-    method: GET
-    user: "{{ se_csp_user }}"
-    password: "{{ se_csp_password }}"
-    force_basic_auth: yes
-    headers:
-      Accept: '*/*'
-    validate_certs: false
-    return_content: true
-  failed_when: se_csp_resource_rsp.status != 200
-  register: se_csp_resource_rsp
-  delegate_to: localhost
-
-- name: Avi SE | CSP | Service deploy | Set CSP version
-  set_fact:
-    se_csp_resource_info: "{{ se_csp_resource_rsp.content|from_json }}"
-
 - name: Avi SE | CSP | Service deploy | CSP resource info
   debug: msg="{{se_csp_resource_info['resource:resource']}}"
 
@@ -139,6 +120,7 @@
       username: "{{ se_master_ctl_username }}"
       password: "{{ se_master_ctl_password }}"
       api_version: "{{ se_master_ctl_version }}"
+      se_name: "{{ se_csp_mgmt_ip }}"
       data_vnics_config: "{{ se_csp_vnics_config }}"
     delegate_to: localhost
   when: se_csp_vnics_config
