@@ -1,0 +1,29 @@
+---
+language: python
+services:
+  - docker
+
+before_install:
+  - sudo apt-get -qq update
+
+env:
+  global:
+    - ROLE_NAME: avise_csp
+  matrix:
+    - MOLECULE_DISTRO: centos:7
+      MOLECULE_SERVICE_MANAGER: systemd
+      MOLECULE_COMMAND: /usr/sbin/init
+
+install:
+  - pip install molecule docker
+
+before_script:
+  - cd ../
+  - mv ansible-role-$ROLE_NAME avinetworks.$ROLE_NAME
+  - cd avinetworks.$ROLE_NAME
+
+script:
+  - molecule lint
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
