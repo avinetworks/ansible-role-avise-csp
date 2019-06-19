@@ -1,3 +1,4 @@
+---
 galaxy_info:
   role_name: avise-csp
   author: Avi Networks
@@ -6,11 +7,11 @@ galaxy_info:
   license: Apache-2.0
   min_ansible_version: 2.0
   platforms:
-  - name: Ubuntu
-    versions:
-    - precise
-    - trusty
-    - xenial
+    - name: Ubuntu
+      versions:
+        - precise
+        - trusty
+        - xenial
   galaxy_tags:
     - avi
     - controller
@@ -30,4 +31,4 @@ galaxy_info:
     - csp
     - cisco
 dependencies:
-  - { role: avinetworks.avisdk }
+  - role: avinetworks.avisdk

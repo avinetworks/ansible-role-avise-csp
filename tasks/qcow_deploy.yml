@@ -35,15 +35,17 @@
   delegate_to: localhost
 
 - block:
-  - set_fact:
-      se_image_exists_json: "{{ se_image_exists.content|from_json }}"
-  - debug: msg="Image {{ se_image_exists_json.output.name }} already exists."
+    - name: Avi SE | CSP | Image deploy | Set the se_image_exists_json var
+      set_fact:
+        se_image_exists_json: "{{ se_image_exists.content|from_json }}"
+    - debug: msg="Image {{ se_image_exists_json.output.name }} already exists."
   when: se_image_exists.status == 200 and se_csp_resource_info['resource:resource'].csp_version < "02.04"
 
 - block:
-  - set_fact:
-      se_image_exists_json: "{{ se_image_exists.content|from_json }}"
-  - debug: msg="Image {{ se_image_exists_json['question_xml:output']['name'] }} already exists."
+    - name: Avi SE | CSP | Image deploy | Set the se_image_exists_json var
+      set_fact:
+        se_image_exists_json: "{{ se_image_exists.content|from_json }}"
+    - debug: msg="Image {{ se_image_exists_json['question_xml:output']['name'] }} already exists."
   when: se_image_exists.status == 200 and se_csp_resource_info['resource:resource'].csp_version >= "02.04"
 
 - block:
@@ -76,7 +78,7 @@
         path: "{{ se_image_path }}/{{ se_csp_qcow_image_file }}"
       register: se_qcow_status
     - block:
-        - name:  Avi SE | CSP | Image deploy | generate SE image if not exist on controller
+        - name: Avi SE | CSP | Image deploy | generate SE image if not exist on controller
           delegate_to: localhost
           avi_api_session:
             controller: "{{ se_master_ctl_ip }}"
@@ -108,7 +110,9 @@
       register: se_tmp_image_file
 
     - name: Remove tmp SE image
-      command: rm -rf /tmp/{{ se_csp_qcow_image_name }}
+      file:
+        path: /tmp/{{ se_csp_qcow_image_name }}
+        state: absent
       when: se_tmp_image_file.stat.exists
 
     - name: Avi SE | CSP | Image deploy | Verify the qcow image copied successfully

@@ -32,7 +32,7 @@
     tenant: "{{ se_tenant }}"
     api_version: "{{ se_master_ctl_version }}"
     http_method: get
-    path: securetoken-generate?cloud_uuid={{ se_cloud_data.obj.results[0].uuid}}
+    path: securetoken-generate?cloud_uuid={{ se_cloud_data.obj.results[0].uuid }}
   register: se_authtoken
   delegate_to: localhost
 
