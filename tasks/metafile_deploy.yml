@@ -35,7 +35,7 @@
       delegate_to: localhost
       register: se_avi_metafile
     - name: Avi SE | CSP | Metafile deploy | Deploy metafile {{ se_csp_metafile_name }} to the CSP device
-      shell: sshpass -p {{ se_csp_password }} scp -o StrictHostKeyChecking=no /tmp/{{ se_csp_metafile_name }} {{ se_csp_user }}@{{ se_csp_host }}:/osp/repository
+      shell: sshpass -p {{ se_csp_password }} scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/{{ se_csp_metafile_name }} {{ se_csp_user }}@{{ se_csp_host }}:/osp/repository
       delegate_to: localhost
       failed_when: false
   when: se_avi_metafile_exists.status != 200

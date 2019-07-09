@@ -74,7 +74,7 @@
       when: se_image_file.stat.exists
 
     - name: Avi SE | CSP | Image deploy | SCP qcow to csp device
-      shell: sshpass -p "{{ se_csp_password }}" scp -o StrictHostKeyChecking=no /tmp/{{ se_csp_qcow_image_name }} {{ se_csp_user }}@{{ se_csp_host }}:/osp/repository && rm -rf /tmp/{{ se_csp_qcow_image_name }}
+      shell: sshpass -p "{{ se_csp_password }}" scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no /tmp/{{ se_csp_qcow_image_name }} {{ se_csp_user }}@{{ se_csp_host }}:/osp/repository && rm -rf /tmp/{{ se_csp_qcow_image_name }}
       register: command_result
       failed_when: false
 
