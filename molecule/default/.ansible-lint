@@ -1,0 +1,7 @@
+---
+parseable: true
+skip_list:
+  - ANSIBLE0010
+  - "305"
+use_default_rules: true
+verbosity: 1
