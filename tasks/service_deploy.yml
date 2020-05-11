@@ -121,6 +121,7 @@
       password: "{{ se_master_ctl_password }}"
       api_version: "{{ se_master_ctl_version }}"
       se_name: "{{ se_csp_mgmt_ip }}"
+      tenant: "{{ se_tenant }}"
       data_vnics_config: "{{ se_csp_vnics_config }}"
     delegate_to: localhost
   when: se_csp_vnics_config
