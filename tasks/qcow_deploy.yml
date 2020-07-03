@@ -38,19 +38,19 @@
   - set_fact:
       se_image_exists_json: "{{ se_image_exists.content|from_json }}"
   - debug: msg="Image {{ se_image_exists_json.output.name }} already exists."
-  when: se_image_exists.status == 200 and se_csp_resource_info['resource:resource'].csp_version < "02.04"
+  when: se_image_exists.status == 200 and se_csp_resource_info['resource:resource'].csp_version is version("02.04", "<")
 
 - block:
   - set_fact:
       se_image_exists_json: "{{ se_image_exists.content|from_json }}"
   - debug: msg="Image {{ se_image_exists_json['question_xml:output']['name'] }} already exists."
-  when: se_image_exists.status == 200 and se_csp_resource_info['resource:resource'].csp_version >= "02.04"
+  when: se_image_exists.status == 200 and se_csp_resource_info['resource:resource'].csp_version is version("02.04", ">=")
 
 - block:
     - name: Avi SE | CSP | Image deploy | Set SE image path for controller version < 18.2.6
       set_fact:
         se_image_path: "/opt/avi/se_ova"
-      when: se_master_ctl_version < "18.2.6"
+      when: se_master_ctl_version is version("18.2.6", "<")
 
     - block:
         - name: Avi SE | CSP | Image deploy | Get controller tag
@@ -69,7 +69,7 @@
           set_fact:
             se_image_path: "/host/pkgs/{{ data_res.obj.version.Tag }}"
 
-      when: se_master_ctl_version >= "18.2.6"
+      when: se_master_ctl_version is version("18.2.6", ">=")
 
     - name: Avi SE | CSP | Image deploy | Verify qcow exists on controller
       stat:
