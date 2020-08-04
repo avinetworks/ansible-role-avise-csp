@@ -47,7 +47,7 @@
     set_fact:
       se_csp_service_info: "{{se_csp_service_info | combine({'disk-resize': true})}}"
     when:
-      - se_csp_resource_info['resource:resource'].csp_version >= "02.02.04.00"
+      - se_csp_resource_info['resource:resource'].csp_version is version_compare("02.02.04.00", ">=")
 
   - name: Avi SE | CSP | Service deploy | Using service info
     debug: msg="{{se_csp_service_info}}"
