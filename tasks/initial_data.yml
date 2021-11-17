@@ -31,8 +31,8 @@
 
 - name: Avi SE | Initial Data | Set Controller version information
   set_fact:
-    ctl_build: "{{ initial_data.json.version.build }}"
-    se_master_ctl_version: "{{ initial_data.json.version.Version }}"
+    ctl_build: "{{ initial_data.obj.version.build }}"
+    se_master_ctl_version: "{{ initial_data.obj.version.Version }}"
   when: initial_data
 
 - name: Avi SE | Initial Data | Set Controller Cluster UUID information
