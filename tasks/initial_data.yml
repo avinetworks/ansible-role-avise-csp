@@ -9,11 +9,16 @@
     - se_master_ctl_ip
     - se_master_ctl_username
     - se_master_ctl_password
+    - se_tenant
 
 - name: Avi SE | Initial Data | Get Controller information
-  uri:
-    url: "https://{{ se_master_ctl_ip }}/api/initial-data"
-    validate_certs: no
+  avi_api_session:
+    controller: "{{ se_master_ctl_ip }}"
+    username: "{{ se_master_ctl_username }}"
+    password: "{{ se_master_ctl_password }}"
+    tenant: "{{ se_tenant }}"
+    http_method: get
+    path: "initial-data"
   register: initial_data
   delegate_to: localhost
 
